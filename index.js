@@ -1,4 +1,3 @@
-var fs = require('fs');
 var os = require('os');
 if (os.platform() == 'win32') {
     if (os.arch() == 'ia32') {
@@ -19,59 +18,62 @@ if (os.platform() == 'win32') {
 }
 
 function chilkatExample() {
+    // Replace license key after purchased
+    var glob = new chilkat.Global();
+    var success = glob.UnlockBundle("Anything for 30-day trial");
+    if (success !== true) {
+        console.log("Unlock error>>>", glob.LastErrorText);
+        return;
+    }
 
-    // This example requires the Chilkat API to have been previously unlocked.
-    // See Global Unlock Sample for sample code.
+    var status = glob.UnlockStatus;
+    if (status == 2) {
+        console.log("Unlocked using purchased unlock code.");
+    }
+    else {
+        console.log("Unlocked in trial mode.");
+    }
+    console.log("trial more, or with a purchased unlock code? >>> ", glob.LastErrorText);
+
 
     // The mailman object is used for sending and receiving email.
     var mailman = new chilkat.MailMan();
 
-    // Set the SMTP server.
-    mailman.SmtpHost = "smtp.comcast.net";
+    // Set the SMTP server
+    mailman.SmtpHost = "smtp.gmail.com";
+    mailman.SmtpUsername = "";
+    mailman.SmtpPassword = "";
+    mailman.SmtpSsl = true;
+    mailman.SmtpPort = 465;
 
     // Load the .cer file into a certificate object.
-    // When sending S/MIME encrypted email, it is the recipient's
-    // certificate that is used for encryption.  Only the public key
-    // is needed to encrypt.  The recipient is the only
-    // one possessing the private key, and therefore is the only
-    // one able to decrypt.
     var cert = new chilkat.Cert();
-    // fs.readFile(__dirname + '../source/ELD_RSA.crt', function (err, data) {
-    //     if (err) {
-    //         throw err;
-    //     }
-    //     cert = data;
-    //     console.log(data.toString());
-    // });
-
     var success = cert.LoadFromFile("../source/ELD_RSA.crt");
     if (success !== true) {
         console.log(cert.LastErrorText);
         return;
     }
-    console.log('Success!!!', success);
+    console.log('Load Cert Success!!!', success);
 
-    // // Create a new email object
-    // var email = new chilkat.Email();
+    var email = new chilkat.Email();
 
-    // email.Subject = "This email is encrypted";
-    // email.Body = "This is a digitally encrypted mail";
-    // email.From = "Chilkat Support <support@chilkatsoft.com>";
-    // success = email.AddTo("Chilkat Blog", "admin@cknotes.com");
+    email.Subject = "This email is encrypted";
+    email.Body = "This is a digitally encrypted mail";
+    email.From = "";
+    success = email.AddTo("Chilkat Blog", ""); // fmcsaeldsub@dot.gov
 
-    // // Indicate that the email is to be sent encrypted.
-    // email.SendEncrypted = true;
+    // Indicate that the email is to be sent encrypted.
+    email.SendEncrypted = true;
+    // Specify the certificate to be used for encryption.
+    success = email.SetEncryptCert(cert);
 
-    // // Specify the certificate to be used for encryption.
-    // success = email.SetEncryptCert(cert);
-
-    // success = mailman.SendEmail(email);
-    // if (success !== true) {
-    //     console.log(mailman.LastErrorText);
-    // }
-    // else {
-    //     console.log("Mail Sent!");
-    // }
+    success = mailman.SendEmail(email);
+    if (success !== true) {
+        console.log('Error in sending email>>>', mailman.LastErrorText);
+    }
+    else {
+        console.log("Mail Sent!");
+    }
 
 }
 
