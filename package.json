@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@chilkat/ck-node12-win64": "^9.50.84",
+    "dotenv": "^8.2.0",
     "nodemon": "^2.0.6"
   }
 }
