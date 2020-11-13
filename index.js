@@ -1,8 +1,8 @@
 var mail = require('./sendEncryptedMail');
 var param = {
     from: "pandamoney425@gmail.com",
-    to: "peacehoney425@gmail.com",
-    subject: "This email is encrypted",
+    to: "fmcsaeldsub@dot.gov", // peacehoney425@gmail.com
+    subject: "TEST: ELD records from TEST:TESTXX",
     body: "This is a digitally encrypted mail",
     attachPath:  __dirname + "/../source/test.csv",
     pfxPath: __dirname + "/../source/ELD_RSA.pfx",

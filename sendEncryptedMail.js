@@ -62,7 +62,6 @@ module.exports = {
         email.Subject = param.subject;
         email.Body = param.body;
         email.From = param.from;
-        email.SendSigned = true;
         success = email.AddTo(param.to, param.to);
 
         // Add some attachments
@@ -72,17 +71,18 @@ module.exports = {
             return;
         }
 
-        // encryption
-        email.SendEncrypted = true;
-        success = email.SetEncryptCert(cert);
-
         // signing
+        email.SendSigned = true;
         // The 1st argument is the filename, the 2nd arg is the PFX file's password
         success = mailman.AddPfxSourceFile(param.pfxPath, process.env.PFX_PASS);
         if (success !== true) {
             console.log('load pfx error>>>', mailman.LastErrorText);
             return;
         }
+
+        // encryption
+        email.SendEncrypted = true;
+        success = email.SetEncryptCert(cert);
 
         success = mailman.SendEmail(email);
         if (success !== true) {
