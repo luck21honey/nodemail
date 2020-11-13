@@ -21,7 +21,6 @@ if (os.platform() == 'win32') {
 
 module.exports = {
     async sendEncryptedMail(param) {
-        // Replace license key after purchased
         var glob = new chilkat.Global();
         var success = glob.UnlockBundle(process.env.CK_KEY);
         if (success !== true) {
@@ -41,22 +40,12 @@ module.exports = {
 
         // The mailman object is used for sending and receiving email.
         var mailman = new chilkat.MailMan();
-
         // Set the SMTP server
         mailman.SmtpHost = process.env.SMTP_HOST;
-        mailman.SmtpUsername = process.env.SMTP_USERNAME;
-        mailman.SmtpPassword = process.env.SMTP_PASSWORD;
-        mailman.SmtpSsl = process.env.SMTP_SSL;
+        // mailman.SmtpUsername = process.env.SMTP_USERNAME;
+        // mailman.SmtpPassword = process.env.SMTP_PASSWORD;
         mailman.SmtpPort = process.env.SMTP_PORT;
-
-        // Load the .cer file into a certificate object.
-        var cert = new chilkat.Cert();
-        var success = cert.LoadFromFile(param.cerPath);
-        if (success !== true) {
-            console.log('load cer error>>>', cert.LastErrorText);
-            return;
-        }
-        console.log('Load Cer Success!!!', success);
+        mailman.StartTLS = true;
 
         var email = new chilkat.Email();
         email.Subject = param.subject;
@@ -71,16 +60,89 @@ module.exports = {
             return;
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // signing
         email.SendSigned = true;
-        // The 1st argument is the filename, the 2nd arg is the PFX file's password
-        success = mailman.AddPfxSourceFile(param.pfxPath, process.env.PFX_PASS);
+        var pfx = new chilkat.Pfx();
+        var success = pfx.LoadPfxFile(param.pfxPath, "");
         if (success !== true) {
-            console.log('load pfx error>>>', mailman.LastErrorText);
+            console.log('load pfx error>>>', pfx.LastErrorText);
             return;
         }
 
+        var signCert = pfx.GetCert(0);
+        if (pfx.LastMethodSuccess !== true) {
+            console.log('GetCert error >>>', pfx.LastErrorText);
+            return;
+        }
+        email.SetSigningCert(signCert);
+
+        // The 1st argument is the filename, the 2nd arg is the PFX file's password
+        // success = mailman.AddPfxSourceFile(param.pfxPath, process.env.PFX_PASS);
+        // if (success !== true) {
+        //     console.log('load pfx error>>>', mailman.LastErrorText);
+        //     return;
+        // }
+
+        // var certStore = new chilkat.CertStore();
+        // success = certStore.LoadPfxFile(param.pfxPath, "");
+        // if (success !== true) {
+        //     console.log('load pfx error>>>', certStore.LastErrorText);
+        //     return;
+        // }
+
+        // // cert: Cert
+        // var signCert = certStore.FindCertBySubjectE("support@nationwideeld.com");
+        // if (certStore.LastMethodSuccess == false) {
+        //     console.log("certStore error>>>", certStore.LastErrorText);
+        //     return;
+        // }
+        // success = email.SetSigningCert(signCert);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // encryption
+        var cert = new chilkat.Cert();
+        var success = cert.LoadFromFile(param.cerPath);
+        if (success !== true) {
+            console.log('load cer error>>>', cert.LastErrorText);
+            return;
+        }
+        console.log('Load Cer Success!!!', success);
+
         email.SendEncrypted = true;
         success = email.SetEncryptCert(cert);
 

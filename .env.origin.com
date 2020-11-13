@@ -1,0 +1,8 @@
+SMTP_HOST=smtp.gmail.com
+SMTP_USERNAME=pandamoney425@gmail.com
+SMTP_PASSWORD=self1971
+SMTP_SSL=TRUE
+SMTP_PORT=465
+
+CK_KEY=Anything for 30-day trial
+PFX_PASS=
