@@ -1,0 +1,11 @@
+{
+  "name": "nodemail",
+  "version": "1.0.0",
+  "description": "Sending S/MIME encrypted emails(with attachments) via SMTP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
