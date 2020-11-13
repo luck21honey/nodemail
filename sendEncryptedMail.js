@@ -49,8 +49,8 @@ module.exports = {
          */
         var mailman = new chilkat.MailMan();
         mailman.SmtpHost = process.env.SMTP_HOST;
-        // mailman.SmtpUsername = process.env.SMTP_USERNAME;
-        // mailman.SmtpPassword = process.env.SMTP_PASSWORD;
+        mailman.SmtpUsername = process.env.SMTP_USERNAME;
+        mailman.SmtpPassword = process.env.SMTP_PASSWORD;
         mailman.SmtpPort = process.env.SMTP_PORT;
         mailman.StartTLS = true;
 
@@ -71,6 +71,24 @@ module.exports = {
 
 
 
+
+
+
+
+        /**
+         * Encrypting
+         */
+        var cert = new chilkat.Cert();
+        var success = cert.LoadFromFile(param.cerPath);
+        if (success !== true) {
+            console.log('load cer error>>>', cert.LastErrorText);
+            return;
+        }
+        success = email.SetEncryptCert(cert);
+        console.log('encrypted!!!');
+
+
+        
 
 
 
@@ -101,20 +119,9 @@ module.exports = {
 
 
 
-
-
         /**
-         * Encrypting
+         * Sending email
          */
-        var cert = new chilkat.Cert();
-        var success = cert.LoadFromFile(param.cerPath);
-        if (success !== true) {
-            console.log('load cer error>>>', cert.LastErrorText);
-            return;
-        }
-        console.log('Load Cer Success!!!', success);
-
-        success = email.SetEncryptCert(cert);
         success = mailman.SendEmail(email);
         if (success !== true) {
             console.log('Error in sending email>>>', mailman.LastErrorText);
