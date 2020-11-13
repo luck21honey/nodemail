@@ -51,18 +51,18 @@ module.exports = {
 
         // Load the .cer file into a certificate object.
         var cert = new chilkat.Cert();
-        var success = cert.LoadFromFile(param.certPath);
+        var success = cert.LoadFromFile(param.cerPath);
         if (success !== true) {
-            console.log(cert.LastErrorText);
+            console.log('load cer error>>>', cert.LastErrorText);
             return;
         }
-        console.log('Load Cert Success!!!', success);
+        console.log('Load Cer Success!!!', success);
 
         var email = new chilkat.Email();
-
         email.Subject = param.subject;
         email.Body = param.body;
         email.From = param.from;
+        email.SendSigned = true;
         success = email.AddTo(param.to, param.to); // fmcsaeldsub@dot.gov
 
         // Add some attachments
@@ -76,6 +76,12 @@ module.exports = {
         email.SendEncrypted = true;
         // Specify the certificate to be used for encryption.
         success = email.SetEncryptCert(cert);
+        // Indicate that the email should be sent signed.
+        success = mailman.AddPfxSourceFile(param.pfxPath, "secret");
+        if (success !== true) {
+            console.log('load pfx error>>>', mailman.LastErrorText);
+            return;
+        }
 
         success = mailman.SendEmail(email);
         if (success !== true) {
