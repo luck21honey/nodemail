@@ -4,8 +4,14 @@
   "description": "Sending S/MIME encrypted emails(with attachments) via SMTP",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@chilkat/ck-node12-win64": "^9.50.84",
+    "nodemon": "^2.0.6"
+  }
 }
