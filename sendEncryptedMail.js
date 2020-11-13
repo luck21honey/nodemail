@@ -63,7 +63,7 @@ module.exports = {
         email.Body = param.body;
         email.From = param.from;
         email.SendSigned = true;
-        success = email.AddTo(param.to, param.to); // fmcsaeldsub@dot.gov
+        success = email.AddTo(param.to, param.to);
 
         // Add some attachments
         var contentType = email.AddFileAttachment(param.attachPath)
@@ -72,12 +72,13 @@ module.exports = {
             return;
         }
 
-        // Indicate that the email is to be sent encrypted.
+        // encryption
         email.SendEncrypted = true;
-        // Specify the certificate to be used for encryption.
         success = email.SetEncryptCert(cert);
-        // Indicate that the email should be sent signed.
-        success = mailman.AddPfxSourceFile(param.pfxPath, "secret");
+
+        // signing
+        // The 1st argument is the filename, the 2nd arg is the PFX file's password
+        success = mailman.AddPfxSourceFile(param.pfxPath, process.env.PFX_PASS);
         if (success !== true) {
             console.log('load pfx error>>>', mailman.LastErrorText);
             return;
