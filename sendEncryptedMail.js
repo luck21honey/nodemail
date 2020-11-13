@@ -23,12 +23,12 @@ module.exports = {
     async sendEncryptedMail(param) {
         // Replace license key after purchased
         var glob = new chilkat.Global();
-        var success = glob.UnlockBundle("Anything for 30-day trial");
+        var success = glob.UnlockBundle(process.env.CK_KEY);
         if (success !== true) {
             console.log("Unlock error>>>", glob.LastErrorText);
             return;
         }
-    
+
         var status = glob.UnlockStatus;
         if (status == 2) {
             console.log("Unlocked using purchased unlock code.");
@@ -37,11 +37,11 @@ module.exports = {
             console.log("Unlocked in trial mode.");
         }
         // console.log("Trial more, or with a purchased unlock code? >>> ", glob.LastErrorText);
-    
-    
+
+
         // The mailman object is used for sending and receiving email.
         var mailman = new chilkat.MailMan();
-    
+
         // Set the SMTP server
         mailman.SmtpHost = process.env.SMTP_HOST;
         mailman.SmtpUsername = process.env.SMTP_USERNAME;
@@ -57,25 +57,37 @@ module.exports = {
             return;
         }
         console.log('Load Cert Success!!!', success);
-    
+
         var email = new chilkat.Email();
-    
+
         email.Subject = param.subject;
         email.Body = param.body;
         email.From = param.from;
         success = email.AddTo(param.to, param.to); // fmcsaeldsub@dot.gov
-    
+
+        // Add some attachments
+        var contentType = email.AddFileAttachment(param.attachPath)
+        if (email.LastMethodSuccess !== true) {
+            console.log(email.LastErrorText);
+            return;
+        }
+
         // Indicate that the email is to be sent encrypted.
         email.SendEncrypted = true;
         // Specify the certificate to be used for encryption.
         success = email.SetEncryptCert(cert);
-    
+
         success = mailman.SendEmail(email);
         if (success !== true) {
             console.log('Error in sending email>>>', mailman.LastErrorText);
+        } else {
+            success = mailman.CloseSmtpConnection();
+            if (success !== true) {
+                console.log("Connection to SMTP server not closed cleanly.");
+            }
+
+            console.log("Mail with attachments sent!");
         }
-        else {
-            console.log("Mail Sent!");
-        }
+
     }
 }
